@@ -1,15 +1,27 @@
 class Blocks(object):
 
     #number - name associations hardcoded
-    names={1:'square'}
+    names={1:'square', 5:'leftL', 6:'rightL', 4:'L', 3:'T', 2:'line', 8:'leftZ', 9:'rightZ', 7:'Z'}
+    #number - shape associations hardcoded
+    coords={1:[(0,0),(0,1),(1,0), (1,1)],
+            2: [(0, 0), (0, 1), (0, 2), (0, 3)],
+            3: [(0, 0), (1, 0), (2, 0), (1, 1)],
+            4: [(0, 0), (0, 1), (0, 2), (1, 2)],
+            5: [(0, 0), (0, 1), (0, 2), (1, 2)],
+            6: [(0, 0), (1, 0), (1, 1), (1, 2)],
+            7: [(0, 0), (0, 1), (1, 1), (1, 2)],
+            8: [(0, 0), (0, 1), (1, 1), (1, 2)],
+            9: [(1, 0), (1, 1), (0, 1), (0, 2)]
+            }
+    #include random rotating?
+    rotatable={1:False, 2:True, 3: True, 4: True, 5: True, 6: True, 7: True, 8: True, 9: True}
+    #include random flips?
+    flippable={1:False, 2: False, 3: False, 4: True, 5: False, 6: False, 7: True, 8: False, 9: False}
 
     def __init__(self):
         pass
         print(self.names)
 
-    def getName(self, number):
-        assert number<= max(self.names)
-        return(self.names[number])
 
 class Grid(object):
     """
