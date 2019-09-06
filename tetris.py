@@ -48,10 +48,30 @@ class Grid(object):
     self.blocks = blocks
     self.occupancies = [[0] * self.xsize] * self.ysize
 
+  def initiate(self):
+    pass
+
   def step(self, temperature=0):
-    for t in self.blocks:
-      randx = random.randrange(self.xsize)
-      randy = random.randrange(self.ysize)
+    """
+    fixed number simulation
+    :param temperature:
+    :return:
+    """
+    pass
+
+  def add(self, blocknumber):
+    randx = random.randrange(self.xsize)
+    randy = random.randrange(self.ysize)
+    free=True
+    for field in self.blocks.coords[blocknumber]:
+      locationx = randx+field[0]
+      locationy = randy + field[1]
+      if self.occupancies[locationx][locationy]:
+        free=False
+    if free:
+      for field in self.blocks.coords[blocknumber]:
+        self.occupancies[locationx][locationy]=blocknumber
+
 
 
   def run(self, nsteps):
