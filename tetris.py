@@ -2,10 +2,16 @@ import random
 import copy
 
 class Blocks(object):
-  # number - name associations hardcoded
+  """
+  Blocks object is just a list of dictionaries
+  from each blockid, we should be able to look up
+  (hardcoded) name, shape, symmetries
+  (chosen) desired number, volume fraction, or chemical potential
+  (dynamic) counter
+  """
+  # hardcoded characteristics of the blocks
   names = {1: 'square', 5: 'leftL', 6: 'rightL', 4: 'L', 3: 'T', 2: 'line', 8: 'leftZ', 9: 'rightZ', 7: 'Z'}
   inversenames = {v: k for k, v in names.items()}
-  # number - shape associations hardcoded
   coords = {1: [(0, 0), (0, 1), (1, 0), (1, 1)],
             2: [(0, 0), (0, 1), (0, 2), (0, 3)],
             3: [(0, 0), (1, 0), (2, 0), (1, 1)],
@@ -16,13 +22,11 @@ class Blocks(object):
             8: [(0, 0), (0, 1), (1, 1), (1, 2)],
             9: [(1, 0), (1, 1), (0, 1), (0, 2)]
             }
-  # include random rotating?
   rotatable = {1: False, 2: True, 3: True, 4: True, 5: True, 6: True, 7: True, 8: True, 9: True}
-  # include random flips?
   flippable = {1: False, 2: False, 3: False, 4: True, 5: False, 6: False, 7: True, 8: False, 9: False}
 
 
-  def __init__(self, types, chempots=None):
+  def __init__(self, types, goalnumbers):
     self.types = []
     for i in types:
       if isinstance(i, int):
@@ -35,6 +39,8 @@ class Blocks(object):
                 set(self.inversenames), sep='')
           raise
     print(self.types)
+    self.numbergoals=dict(zip(types, goalnumbers))
+    self.blockcounts=  dict([(blocknumber,0) for blocknumber in self.types])
 
 
 
@@ -55,10 +61,8 @@ class Grid(object):
       self.occupancies.append(row)
 
 
-    #should be in blocks object maybe
-    self.goals = dict([(blocknumber,2) for blocknumber in self.blockstypes]) #hard coaded goal for testing
-    #should be passed in blocks object
-    self.blockcounts = dict([(blocknumber,0) for blocknumber in self.blockstypes])
+    #should be passed in blocks object - keep here a second time?
+    self.blocks.blockcounts = dict([(blocknumber,0) for blocknumber in self.blockstypes])
 
   def __str__(self): #do something with extra args later?
     outstr_list = []
@@ -139,8 +143,6 @@ class Grid(object):
         locationy = randy + field[1]
         print(locationx, locationy)
         self.setOccupancy(locationx, locationy, blocknumber)
-
-
 
   def run(self, nsteps):
     pass
