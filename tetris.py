@@ -1,3 +1,5 @@
+import random
+
 class Blocks(object):
   # number - name associations hardcoded
   names = {1: 'square', 5: 'leftL', 6: 'rightL', 4: 'L', 3: 'T', 2: 'line', 8: 'leftZ', 9: 'rightZ', 7: 'Z'}
@@ -33,9 +35,6 @@ class Blocks(object):
           raise
     print(self.types)
 
-  def step(self):
-    randx=8
-    randy=8
 
 
 class Grid(object):
@@ -50,7 +49,10 @@ class Grid(object):
     self.occupancies = [[0] * self.xsize] * self.ysize
 
   def step(self, temperature=0):
-    pass
+    for t in self.blocks:
+      randx = random.randrange(self.xsize)
+      randy = random.randrange(self.ysize)
+
 
   def run(self, nsteps):
     pass
