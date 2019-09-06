@@ -48,8 +48,23 @@ class Grid(object):
     self.blocks = blocks
     self.occupancies = [[0] * self.xsize] * self.ysize
 
+    #should be in blocks object maybe
+    self.goals = dict([(blocknumber,5) for blocknumber in self.blocks]) #hard coaded goal for testing
+    #should be passed in blocks object
+    self.blockcounts = dict([(blocknumber,0) for blocknumber in self.blocks])
+
   def initiate(self):
-    pass
+    done=False
+    while not done:
+      for blocknumber in self.blocks:
+        done = True
+        if self.blockcounts[blocknumber]< self.goals[blocknumber]:
+          self.add(blocknumber)
+          done = False
+        elif self.blockcounts[blocknumber]< self.goals[blocknumber]:
+          pass
+        else:
+          print("oops, too many blocks of type ", blocknumber, " were added")
 
   def step(self, temperature=0):
     """
@@ -57,7 +72,9 @@ class Grid(object):
     :param temperature:
     :return:
     """
-    pass
+    for i in blocks:
+      self.remove(i)
+      self.add(i)
 
   def add(self, blocknumber):
     randx = random.randrange(self.xsize)
