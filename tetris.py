@@ -45,18 +45,18 @@ class Grid(object):
   def __init__(self, xsize, ysize, blocks):
     self.xsize = xsize
     self.ysize = ysize
-    self.blocks = blocks
+    self.blockstypes = blocks.types
     self.occupancies = [[0] * self.xsize] * self.ysize
 
     #should be in blocks object maybe
-    self.goals = dict([(blocknumber,5) for blocknumber in self.blocks]) #hard coaded goal for testing
+    self.goals = dict([(blocknumber,5) for blocknumber in self.blockstypes]) #hard coaded goal for testing
     #should be passed in blocks object
-    self.blockcounts = dict([(blocknumber,0) for blocknumber in self.blocks])
+    self.blockcounts = dict([(blocknumber,0) for blocknumber in self.blockstypes])
 
   def initiate(self):
     done=False
     while not done:
-      for blocknumber in self.blocks:
+      for blocknumber in self.blockstypes:
         done = True
         if self.blockcounts[blocknumber]< self.goals[blocknumber]:
           self.add(blocknumber)
@@ -74,18 +74,34 @@ class Grid(object):
       self.remove(i)
       self.add(i)
 
+  def getOccupancy(self, x, y):
+    """
+    handle boundary conditions here
+    :param x:
+    :param y:
+    :return:
+    """
+    if x < 0: x+=self.xsize
+    elif x >=self.xsize : x -= self.xsize
+    if y < 0: y+=self.ysize
+    elif y >=self.ysize : y -= self.ysize
+    return self.occupancies[x][y]
+
+  def setOccupancy(self, x, y, blocknumber):
+    pass
+
   def add(self, blocknumber):
     randx = random.randrange(self.xsize)
     randy = random.randrange(self.ysize)
     free=True
-    for field in self.blocks.coords[blocknumber]:
+    for field in Blocks.coords[blocknumber]:
       locationx = randx+field[0]
       locationy = randy + field[1]
-      if self.occupancies[locationx][locationy]:
+      if self.getOccupancy(locationx, locationy):
         free=False
     if free:
-      for field in self.blocks.coords[blocknumber]:
-        self.occupancies[locationx][locationy]=blocknumber
+      for field in Blocks.coords[blocknumber]:
+        self.setOccupancy(locationx, locationy, blocknumber)
 
 
 
@@ -102,3 +118,5 @@ if __name__ == "__main__":
   squares = Blocks(types=['square'])
   testgrid = Grid(10, 10, squares)
   print("created testgrid:", testgrid)
+  testgrid.initiate()
+  print("added to testgrid")
