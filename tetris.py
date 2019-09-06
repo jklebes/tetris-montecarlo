@@ -61,9 +61,7 @@ class Grid(object):
         if self.blockcounts[blocknumber]< self.goals[blocknumber]:
           self.add(blocknumber)
           done = False
-        elif self.blockcounts[blocknumber]< self.goals[blocknumber]:
-          pass
-        else:
+        elif self.blockcounts[blocknumber] > self.goals[blocknumber]:
           print("oops, too many blocks of type ", blocknumber, " were added")
 
   def step(self, temperature=0):
