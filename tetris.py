@@ -1,4 +1,5 @@
 import random
+import copy
 
 class Blocks(object):
   # number - name associations hardcoded
@@ -46,16 +47,36 @@ class Grid(object):
     self.xsize = xsize
     self.ysize = ysize
     self.blockstypes = blocks.types
-    self.occupancies = [[0] * self.xsize] * self.ysize
+
+    row1 = [0] * self.xsize
+    self.occupancies = [row1]
+    for i in range(1, ysize): #needed to avoid pointer to same object for all rows
+      row=copy.copy(row1)                         #should switch to numpy
+      self.occupancies.append(row)
+
 
     #should be in blocks object maybe
-    self.goals = dict([(blocknumber,5) for blocknumber in self.blockstypes]) #hard coaded goal for testing
+    self.goals = dict([(blocknumber,2) for blocknumber in self.blockstypes]) #hard coaded goal for testing
     #should be passed in blocks object
     self.blockcounts = dict([(blocknumber,0) for blocknumber in self.blockstypes])
 
+  def __str__(self): #do something with extra args later?
+    outstr_list = []
+    for row in self.occupancies:
+      outstr_list.append('|')
+      for i in row:
+        outstr_list.append(str(i))
+      outstr_list.append('|\n')
+    return ' '.join(outstr_list)
+
   def initiate(self):
     done=False
-    while not done:
+    counter=0
+    limit = 3
+    while not done and counter < limit:
+      print('initiating loop', counter)
+      print(self)
+      counter +=1
       for blocknumber in self.blockstypes:
         done = True
         if self.blockcounts[blocknumber]< self.goals[blocknumber]:
@@ -88,7 +109,15 @@ class Grid(object):
     return self.occupancies[x][y]
 
   def setOccupancy(self, x, y, blocknumber):
-    pass
+    if x < 0:
+      x += self.xsize
+    elif x >= self.xsize:
+      x -= self.xsize
+    if y < 0:
+      y += self.ysize
+    elif y >= self.ysize:
+      y -= self.ysize
+    self.occupancies[x][y] = blocknumber
 
   def add(self, blocknumber):
     randx = random.randrange(self.xsize)
@@ -97,10 +126,18 @@ class Grid(object):
     for field in Blocks.coords[blocknumber]:
       locationx = randx+field[0]
       locationy = randy + field[1]
+      print('checking ', locationx, locationy, ': ')
       if self.getOccupancy(locationx, locationy):
+        print('not free')
         free=False
+      else:
+        print('free')
     if free:
+      print('adding at: ')
       for field in Blocks.coords[blocknumber]:
+        locationx = randx + field[0]
+        locationy = randy + field[1]
+        print(locationx, locationy)
         self.setOccupancy(locationx, locationy, blocknumber)
 
 
@@ -117,6 +154,7 @@ if __name__ == "__main__":
   print("running")
   squares = Blocks(types=['square'])
   testgrid = Grid(10, 10, squares)
-  print("created testgrid:", testgrid)
+  print("created testgrid:", testgrid, sep ='\n')
   testgrid.initiate()
-  print("added to testgrid")
+  print("populated testgrid")
+  print(testgrid)
