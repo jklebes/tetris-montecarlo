@@ -39,7 +39,8 @@ class Blocks(object):
                 set(self.inversenames), sep='')
           raise
     print(self.types)
-    self.numbergoals=dict(zip(types, goalnumbers))
+    self.numbergoals=dict(zip(self.types, goalnumbers))
+    print('numbergoals:', self.numbergoals)
     self.blockcounts=  dict([(blocknumber,0) for blocknumber in self.types])
 
 
@@ -52,17 +53,12 @@ class Grid(object):
   def __init__(self, xsize, ysize, blocks):
     self.xsize = xsize
     self.ysize = ysize
-    self.blockstypes = blocks.types
-
+    self.blocks=blocks
     row1 = [0] * self.xsize
     self.occupancies = [row1]
     for i in range(1, ysize): #needed to avoid pointer to same object for all rows
       row=copy.copy(row1)                         #should switch to numpy
       self.occupancies.append(row)
-
-
-    #should be passed in blocks object - keep here a second time?
-    self.blocks.blockcounts = dict([(blocknumber,0) for blocknumber in self.blockstypes])
 
   def __str__(self): #do something with extra args later?
     outstr_list = []
@@ -76,18 +72,20 @@ class Grid(object):
   def initiate(self):
     done=False
     counter=0
-    limit = 3
+    limit = 10000
     while not done and counter < limit:
-      print('initiating loop', counter)
-      print(self)
+      #print('initiating loop', counter)
+      #print(self)
       counter +=1
-      for blocknumber in self.blockstypes:
+      for blocknumber in self.blocks.types:
         done = True
-        if self.blockcounts[blocknumber]< self.goals[blocknumber]:
+        if self.blocks.blockcounts[blocknumber]< self.blocks.numbergoals[blocknumber]:
           self.add(blocknumber)
           done = False
-        elif self.blockcounts[blocknumber] > self.goals[blocknumber]:
-          print("oops, too many blocks of type ", blocknumber, " were added")
+        elif self.blocks.blockcounts[blocknumber] > self.blocks.numbergoals[blocknumber]:
+          print("oops, too many blocks of type ", blocknumber, " were added: ", self.blocks.blockcounts[blocknumber],
+                ' (goal: ', self.blocks.numbergoals[blocknumber], ' )')
+
 
   def step(self, temperature=0):
     """
@@ -130,19 +128,21 @@ class Grid(object):
     for field in Blocks.coords[blocknumber]:
       locationx = randx+field[0]
       locationy = randy + field[1]
-      print('checking ', locationx, locationy, ': ')
+      #print('checking ', locationx, locationy, ': ')
       if self.getOccupancy(locationx, locationy):
-        print('not free')
+        #print('not free')
         free=False
       else:
-        print('free')
+        #print('free')
+        pass
     if free:
-      print('adding at: ')
+      #print('adding at: ')
       for field in Blocks.coords[blocknumber]:
         locationx = randx + field[0]
         locationy = randy + field[1]
-        print(locationx, locationy)
+        #print(locationx, locationy)
         self.setOccupancy(locationx, locationy, blocknumber)
+        self.blocks.blockcounts[blocknumber]+=1
 
   def run(self, nsteps):
     pass
@@ -154,9 +154,10 @@ class Grid(object):
 if __name__ == "__main__":
   '''tests'''
   print("running")
-  squares = Blocks(types=['square'])
+  squares = Blocks(types=['square', 'L'], goalnumbers=[8, 2])
   testgrid = Grid(10, 10, squares)
   print("created testgrid:", testgrid, sep ='\n')
   testgrid.initiate()
   print("populated testgrid")
   print(testgrid)
+  print('counts:', testgrid.blocks.blockcounts)
