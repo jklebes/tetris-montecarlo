@@ -2,18 +2,12 @@ import random
 import copy
 from abc import ABCMeta, abstractmethod
 
-class Blocks(object):
-    """
-    Blocks object is just a list of dictionaries
-    from each blockid, we should be able to look up
-    (hardcoded) name, shape, symmetries
-    (chosen) desired number, volume fraction, or chemical potential
-    (dynamic) counter
-    """
-    # hardcoded characteristics of the blocks
-    names = {1: 'square', 5: 'leftL', 6: 'rightL', 4: 'L', 3: 'T', 2: 'line', 8: 'leftZ', 9: 'rightZ', 7: 'Z'}
-    inversenames = {v: k for k, v in names.items()}
-    coords = {1: [(0, 0), (0, 1), (1, 0), (1, 1)],
+"""kept for reference:
+
+
+names = {1: 'square', 5: 'leftL', 6: 'rightL', 4: 'L', 3: 'T', 2: 'line', 8: 'leftZ', 9: 'rightZ', 7: 'Z'}
+inversenames = {v: k for k, v in names.items()}
+coords = {1: [(0, 0), (0, 1), (1, 0), (1, 1)],
               2: [(0, 0), (0, 1), (0, 2), (0, 3)],
               3: [(0, 0), (1, 0), (2, 0), (1, 1)],
               4: [(0, 0), (0, 1), (0, 2), (1, 2)],
@@ -23,38 +17,33 @@ class Blocks(object):
               8: [(0, 0), (0, 1), (1, 1), (1, 2)],
               9: [(1, 0), (1, 1), (0, 1), (0, 2)]
               }
-    rotatable = {1: False, 2: True, 3: True, 4: True, 5: True, 6: True, 7: True, 8: True, 9: True}
-    flippable = {1: False, 2: False, 3: False, 4: True, 5: False, 6: False, 7: True, 8: False, 9: False}
-
-    def __init__(self, types, goalnumbers):
-        self.types = []
-        for i in types:
-            if isinstance(i, int):
-                self.types.append(i)
-            elif isinstance(i, str):
-                try:
-                    self.types.append(self.inversenames[i])
-                except KeyError:
-                    print("Shape name: '", i, "' not found.  Choose shape names from: ",
-                          set(self.inversenames), sep='')
-                    raise
-        print(self.types)
-        self.numbergoals = dict(zip(self.types, goalnumbers))
-        print('numbergoals:', self.numbergoals)
-        self.blockcounts = dict([(blocknumber, 0) for blocknumber in self.types])
+              
+"""
 
 
-class Block(object, metaclass=ABCmeta):
-    """abstract superclass to 9 types of block
+class Block(object):
+    """superclass to 9 types of block
     lists attributes and methods needed in each block type"""
+    typeid = NotImplemented
+    name = NotImplemented
+    variations = NotImplemented
+    numvariations = NotImplemented
 
-    @abstractmethod
-    def __init__(self):
-      pass
+    def __init__(self, location, idnumber):
+        # choose one of the variations at random
+        self.shape = self.variations[random.randint(numvariations)]
+        self.coords = location + shape
+        self.idnumber = idnumber
 
 
 class Square(Block):
-    pass
+    typeid=1
+    name = 'square'
+    variations = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    numvariations = len(variations)
+
+    def __init__(self, location, idnumber):
+        super().__init__(Block, location, idnumber)
 
 
 class Grid(object):
