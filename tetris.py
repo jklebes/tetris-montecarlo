@@ -47,8 +47,9 @@ class Blocks(object):
 class Block(object, metaclass=ABCmeta):
     """abstract superclass to 9 types of block
     lists attributes and methods needed in each block type"""
+
     @abstractmethod
-    def method1(self):
+    def __init__(self):
       pass
 
 
