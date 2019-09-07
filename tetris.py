@@ -26,15 +26,15 @@ class BlockCollection(object):
         self.typeid=typeid
 
 class Block(object):
-    """superclass to 9 specific types of block
+    """superclass to 7 specific types of block
     lists attributes and methods needed in each block type"""
 
     #the user should instantiate specific subclass objects, not Block objects
     typeid = NotImplemented
     name = NotImplemented
     baseShape = NotImplemented #coords, starting from (0,0), defining the shape of the block
-    chiral = NotImplemented
     rotates = NotImplemented
+    chiral = NotImplemented
 
     def __init__(self, location, idnumber):
         """
@@ -57,7 +57,7 @@ class Block(object):
 
 
 
-class Square(Block):
+class SquareBlock(Block):
     typeid=1
     name = 'square'
     baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
@@ -66,6 +66,30 @@ class Square(Block):
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
+
+class TBlock(Block):
+    pass
+
+class LineBlock(Block):
+    pass
+
+class LBlock(Block):
+    pass
+
+class LeftLBlock(Block):
+    pass
+
+class RightLBlock(Block):
+    pass
+
+class ZBlocK(Block):
+    pass
+
+class LeftZBlock(Block):
+    pass
+
+class RightZBlock(Block):
+    pass
 
 
 class Grid(object):
