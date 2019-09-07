@@ -33,7 +33,7 @@ class Block(object):
     typeid = NotImplemented
     name = NotImplemented
     baseShape = NotImplemented #coords, starting from (0,0), defining the shape of the block
-    flips = NotImplemented
+    chiral = NotImplemented
     rotates = NotImplemented
 
     def __init__(self, location, idnumber):
@@ -50,7 +50,7 @@ class Block(object):
         # flip or rotate at random, if applicable
         if self.rotates:
             self.shape=self.randomRotate(self.shape)
-        if self.flips:
+        if self.chiral:
             self.shape = self.randomFlip(self.shape)
         self.coords = location + self.shape
         self.idnumber = idnumber
@@ -60,8 +60,9 @@ class Block(object):
 class Square(Block):
     typeid=1
     name = 'square'
-    variations = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
-    numvariations = len(variations)
+    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    chiral=False
+    rotates = False
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
