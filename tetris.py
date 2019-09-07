@@ -20,6 +20,10 @@ coords = {1: [(0, 0), (0, 1), (1, 0), (1, 1)],
               
 """
 
+class BlockCollection(object):
+    """holds many blocks of one type"""
+    def __init__(self, typeid): #with no further arguments: init empty collection
+        self.typeid=typeid
 
 class Block(object):
     """superclass to 9 specific types of block
@@ -27,11 +31,11 @@ class Block(object):
     typeid = NotImplemented
     name = NotImplemented
     variations = NotImplemented
-    numvariations = NotImplemented
+    numvariations: int = NotImplemented
 
     def __init__(self, location, idnumber):
         # choose one of the variations at random
-        self.shape = self.variations[random.randint(numvariations)]
+        self.shape = self.variations[random.randint(self.numvariations)]
         self.coords = location + shape
         self.idnumber = idnumber
 
@@ -51,13 +55,17 @@ class Grid(object):
     main object
     """
 
-    def __init__(self, xsize, ysize, blocks):
+    def __init__(self, xsize, ysize, goalnumbers):
         self.xsize = xsize
         self.ysize = ysize
-        self.blocks = blocks
+        self.goalnumbers=goalnumbers
+        self.blockcollection={i, BlockCollection() for i in goalnumbers}
+        self.createEmptyGrid()
+
+    def createEmptyGrid(self):
         row1 = [0] * self.xsize
         self.occupancies = [row1]
-        for i in range(1, ysize):  # needed to avoid pointer to same object for all rows
+        for i in range(1, self.ysize):  # needed to avoid pointer to same object for all rows
             row = copy.copy(row1)  # should switch to numpy
             self.occupancies.append(row)
         self.blocklist = []
@@ -71,7 +79,7 @@ class Grid(object):
             outstr_list.append('|\n')
         return ' '.join(outstr_list)
 
-    def initiate(self):
+    def populate(self):
         done = False
         counter = 0
         limit = 10000
@@ -79,15 +87,15 @@ class Grid(object):
             # print('initiating loop', counter)
             # print(self)
             counter += 1
-            for blocknumber in self.blocks.types:
+            for (typeid, goal) in self.goalnumbers:
                 done = True
-                if self.blocks.blockcounts[blocknumber] < self.blocks.numbergoals[blocknumber]:
-                    self.add(blocknumber)
+                if self.counts[typeid] < goal:
+                    self.add(typeid)
                     done = False
-                elif self.blocks.blockcounts[blocknumber] > self.blocks.numbergoals[blocknumber]:
-                    print("oops, too many blocks of type ", blocknumber, " were added: ",
-                          self.blocks.blockcounts[blocknumber],
-                          ' (goal: ', self.blocks.numbergoals[blocknumber], ' )')
+                elif self.counts[typeid] < goal
+                    print("oops, too many blocks of type ", typeid, " were added: ",
+                          self.counts[typeid] ,
+                          ' (goal: ', goal, ' )')
 
     def step(self, temperature=0):
         """
@@ -161,10 +169,10 @@ class Grid(object):
 if __name__ == "__main__":
     '''tests'''
     print("running")
-    squares = Blocks(types=['square', 'L'], goalnumbers=[8, 2])
-    testgrid = Grid(10, 10, squares)
+    goalnumbers = {1: 5} #specify the simulation should contain 5 squares
+    testgrid = Grid(10, 10, goalnumbers)
     print("created testgrid:", testgrid, sep='\n')
-    testgrid.initiate()
+    testgrid.populate()
     print("populated testgrid")
     print(testgrid)
     print('counts:', testgrid.blocks.blockcounts)
