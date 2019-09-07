@@ -24,10 +24,14 @@ class BlockCollection(object):
     """holds many blocks of one type"""
     def __init__(self, typeid): #with no further arguments: init empty collection
         self.typeid=typeid
-        self.blocks={}
+        self.blocks=set([])
 
     def getCount(self):
         return len(self.blocks)
+
+    def addBlock(self, block):
+        #do checks
+        self.blocks.add(block)
 
 class Block(object):
     """superclass to 7 specific types of block
@@ -37,7 +41,6 @@ class Block(object):
     typeid = NotImplemented
     name = NotImplemented
     shapes = NotImplemented
-    createMethodsDict={1: (lambda loc, typeid : SquareBlock(loc, typeid)) }
 
     def __init__(self, location, idnumber):
         """
@@ -47,20 +50,29 @@ class Block(object):
         """
         self.location=location
         self.idnumber=idnumber
-        self.shape = random.choice(self.shape)
-        self.coords = location + self.shape
+        self.shape = random.choice(self.shapes)
+        #print(self.shape, location)
+        self.coords = [(x+location[0],y+location[1]) for (x,y) in self.shape]
         self.idnumber = idnumber
 
-    def createBlock(self, location, typeid):
+    @staticmethod
+    def createBlock(location, typeid, idnumber):
         """
         return a new block object of the desired type
         by using __init__ method from dict
         :param typeid:
         :return:
         """
-        block = self.createMethodsDict[typeid](location, typeid)
+        createMethodsDict = {1: (lambda loc, number: SquareBlock(loc, number))}
+        #print(createMethodsDict[typeid])
+        block = createMethodsDict[typeid](location, idnumber)
         return block
 
+    def getCoords(self):
+        return self.coords
+
+    def getTypeid(self):
+        return self.typeid
 
 class SquareBlock(Block):
     typeid=1
@@ -68,7 +80,7 @@ class SquareBlock(Block):
     shapes = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
 
     def __init__(self, location, idnumber):
-        super().__init__(Block, location, idnumber)
+        super().__init__(location, idnumber)
 
 class TBlock(Block):
     typeid = 3
@@ -81,7 +93,7 @@ class TBlock(Block):
 
 
     def __init__(self, location, idnumber):
-        super().__init__(Block, location, idnumber)
+        super().__init__(location, idnumber)
 
 class LineBlock(Block):
     typeid = 2
@@ -218,12 +230,19 @@ class Grid(object):
         self.blocklist = []
 
     def __str__(self):  # do something with extra args later?
-        outstr_list = []
+        outstr_list = [' .']
+        for i in range(self.xsize):
+            outstr_list.append('-')
+        outstr_list.append('.\n')
         for row in self.occupancies:
             outstr_list.append('|')
             for i in row:
                 outstr_list.append(str(i))
             outstr_list.append('|\n')
+        outstr_list.append('.')
+        for i in range(self.xsize):
+            outstr_list.append('-')
+        outstr_list.append('.\n')
         return ' '.join(outstr_list)
 
     def populate(self):
@@ -285,16 +304,19 @@ class Grid(object):
 
     def setOccupied(self, block):
         for (x,y) in block.getCoords():
-            self.setOccupancy(block.getTypeid())
+            self.setOccupancy(x,y,block.getTypeid())
 
     def checkFree(self, block):
+        for (x,y) in block.getCoords():
+            if self.getOccupancy(x,y)!=0:
+                return False
         return True
 
     def add(self, typeid):
         randx = random.randrange(self.xsize)
         randy = random.randrange(self.ysize)
         location=(randy, randx)
-        proposedBlock = Block.createBlock(typeid)
+        proposedBlock = Block.createBlock(location, typeid, self.blockcollections[typeid].getCount()+1)
 
         if self.checkFree(proposedBlock):
             self.blockcollections[typeid].addBlock(proposedBlock)
@@ -316,4 +338,4 @@ if __name__ == "__main__":
     testgrid.populate()
     print("populated testgrid")
     print(testgrid)
-    print('counts:', testgrid.blocks.blockcounts)
+    print('blocks:', testgrid.blockcollections)
