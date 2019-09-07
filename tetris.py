@@ -1,6 +1,5 @@
-import random
 import copy
-from abc import ABCMeta, abstractmethod
+import random
 
 """kept for reference:
 
@@ -20,24 +19,27 @@ coords = {1: [(0, 0), (0, 1), (1, 0), (1, 1)],
               
 """
 
+
 class BlockCollection(object):
     """holds many blocks of one type"""
-    def __init__(self, typeid): #with no further arguments: init empty collection
-        self.typeid=typeid
-        self.blocks=set([])
+
+    def __init__(self, typeid):  # with no further arguments: init empty collection
+        self.typeid = typeid
+        self.blocks = set([])
 
     def getCount(self):
         return len(self.blocks)
 
     def addBlock(self, block):
-        #do checks
+        # do checks
         self.blocks.add(block)
+
 
 class Block(object):
     """superclass to 7 specific types of block
     lists attributes and methods needed in each block type"""
 
-    #the user should instantiate specific subclass objects, not Block objects
+    # the user should instantiate specific subclass objects, not Block objects
     typeid = NotImplemented
     name = NotImplemented
     shapes = NotImplemented
@@ -48,11 +50,11 @@ class Block(object):
         :param location: (x,y) location of upper left part of block on grid
         :param idnumber: number of this block object in the list of blocks of one type
         """
-        self.location=location
-        self.idnumber=idnumber
+        self.location = location
+        self.idnumber = idnumber
         self.shape = random.choice(self.shapes)
-        #print(self.shape, location)
-        self.coords = [(x+location[0],y+location[1]) for (x,y) in self.shape]
+        # print(self.shape, location)
+        self.coords = [(x + location[0], y + location[1]) for (x, y) in self.shape]
         self.idnumber = idnumber
 
     @staticmethod
@@ -63,8 +65,17 @@ class Block(object):
         :param typeid:
         :return:
         """
-        createMethodsDict = {1: (lambda loc, number: SquareBlock(loc, number))}
-        #print(createMethodsDict[typeid])
+        createMethodsDict = {1: (lambda loc, number: SquareBlock(loc, number)),
+                             2: (lambda loc, number: LineBlock(loc, number)),
+                             3: (lambda loc, number: TBlock(loc, number)),
+                             4: (lambda loc, number: LBlock(loc, number)),
+                             5: (lambda loc, number: LeftLBlock(loc, number)),
+                             6: (lambda loc, number: RightLBlock(loc, number)),
+                             7: (lambda loc, number: ZBlock(loc, number)),
+                             8: (lambda loc, number: LeftZBlock(loc, number)),
+                             9: (lambda loc, number: RightZBlock(loc, number)),
+                             }
+        # print(createMethodsDict[typeid])
         block = createMethodsDict[typeid](location, idnumber)
         return block
 
@@ -74,51 +85,55 @@ class Block(object):
     def getTypeid(self):
         return self.typeid
 
+
 class SquareBlock(Block):
-    typeid=1
+    typeid = 1
     name = 'square'
     shapes = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
 
     def __init__(self, location, idnumber):
         super().__init__(location, idnumber)
 
+
 class TBlock(Block):
     typeid = 3
     name = 'T'
-    shapes =  [[(0, 0), (1, 0), (2, 0), (1, 1)],
+    shapes = [[(0, 0), (1, 0), (2, 0), (1, 1)],
               [(0, 0), (0, 1), (0, 2), (1, 1)],
               [(0, 1), (1, 1), (2, 1), (1, 0)],
               [(1, 0), (1, 1), (1, 2), (0, 1)],
               ]
 
-
     def __init__(self, location, idnumber):
         super().__init__(location, idnumber)
+
 
 class LineBlock(Block):
     typeid = 2
     name = 'line'
-    shapes =  [[(0, 0), (0, 1), (0, 2), (0, 3)],
+    shapes = [[(0, 0), (0, 1), (0, 2), (0, 3)],
               [(0, 0), (1, 0), (2, 0), (3, 0)]]
 
     def __init__(self, location, idnumber):
-        super().__init__(Block, location, idnumber)
+        super().__init__(location, idnumber)
+
 
 class LBlock(Block):
     typeid = 4
     name = 'L'
     """leftL and rightL shapes"""
     shapes = [[(0, 0), (0, 1), (0, 2), (1, 2)],
-             [(0, 1), (1, 1), (2, 1), (2, 0)],
-             [(0, 0), (1, 0), (1, 1), (1, 2)],
-             [(0, 0), (1, 0), (2, 0), (0, 1)],
-             [(0, 0), (0, 1), (0, 2), (1, 2)],
-             [(0, 1), (1, 1), (2, 1), (2, 0)],
-             [(0, 0), (1, 0), (1, 1), (1, 2)],
-             [(0, 0), (1, 0), (2, 0), (0, 1)]]
+              [(0, 1), (1, 1), (2, 1), (2, 0)],
+              [(0, 0), (1, 0), (1, 1), (1, 2)],
+              [(0, 0), (1, 0), (2, 0), (0, 1)],
+              [(1, 0), (1, 1), (1, 2), (0, 2)],
+              [(0, 0), (0, 1), (1, 1), (2, 1)],
+              [(0, 0), (1, 0), (0, 1), (0, 2)],
+              [(0, 0), (1, 0), (2, 0), (2, 1)]]
 
     def __init__(self, location, idnumber):
-        super().__init__(Block, location, idnumber)
+        super().__init__(location, idnumber)
+
 
 class LeftLBlock(Block):
     typeid = 5
@@ -138,13 +153,13 @@ class LeftLBlock(Block):
     
     """
     shapes = [[(0, 0), (0, 1), (0, 2), (1, 2)],
-             [(0, 1), (1, 1), (2, 1), (2, 0)],
-             [(0, 0), (1, 0), (1, 1), (1, 2)],
-             [(0, 0), (1, 0), (2, 0), (0, 1)]]
-
+              [(0, 1), (1, 1), (2, 1), (2, 0)],
+              [(0, 0), (1, 0), (1, 1), (1, 2)],
+              [(0, 0), (1, 0), (2, 0), (0, 1)]]
 
     def __init__(self, location, idnumber):
-        super().__init__(Block, location, idnumber)
+        super().__init__(location, idnumber)
+
 
 class RightLBlock(Block):
     typeid = 6
@@ -156,25 +171,26 @@ class RightLBlock(Block):
        XX             XO
 
     """
-    shapes = [[(0, 0), (0, 1), (0, 2), (1, 2)],
-             [(0, 1), (1, 1), (2, 1), (2, 0)],
-             [(0, 0), (1, 0), (1, 1), (1, 2)],
-             [(0, 0), (1, 0), (2, 0), (0, 1)]]
+    shapes = [[(1, 0), (1, 1), (1, 2), (0, 2)],
+              [(0, 0), (0, 1), (1, 1), (2, 1)],
+              [(0, 0), (1, 0), (0, 1), (0, 2)],
+              [(0, 0), (1, 0), (2, 0), (2, 1)]]
 
     def __init__(self, location, idnumber):
-        super().__init__(Block, location, idnumber)
+        super().__init__(location, idnumber)
 
-class ZBlocK(Block):
+
+class ZBlock(Block):
     typeid = 7
     name = 'Z'
     shapes = [[(0, 0), (0, 1), (1, 1), (1, 2)],
-             [(0, 1), (1, 1), (1, 0), (2, 0)],
-             [(1, 0), (1, 1), (0, 1), (0, 2)],
-             [(0, 0), (1, 0), (1, 1), (2, 1)]]
-
+              [(0, 1), (1, 1), (1, 0), (2, 0)],
+              [(1, 0), (1, 1), (0, 1), (0, 2)],
+              [(0, 0), (1, 0), (1, 1), (2, 1)]]
 
     def __init__(self, location, idnumber):
-        super().__init__(Block, location, idnumber)
+        super().__init__(location, idnumber)
+
 
 class LeftZBlock(Block):
     typeid = 8
@@ -186,14 +202,14 @@ class LeftZBlock(Block):
            OX             
     """
     shapes = [[(0, 0), (0, 1), (1, 1), (1, 2)],
-             [(0, 1), (1, 1), (1, 0), (2, 0)]]
-
+              [(0, 1), (1, 1), (1, 0), (2, 0)]]
 
     def __init__(self, location, idnumber):
-        super().__init__(Block, location, idnumber)
+        super().__init__(location, idnumber)
+
 
 class RightZBlock(Block):
-    typeid = 1
+    typeid = 9
     name = 'rightZ'
     """
         shape:
@@ -202,10 +218,10 @@ class RightZBlock(Block):
                XO             
     """
     shapes = [[(1, 0), (1, 1), (0, 1), (0, 2)],
-             [(0, 0), (1, 0), (1, 1), (2, 1)]]
+              [(0, 0), (1, 0), (1, 1), (2, 1)]]
 
     def __init__(self, location, idnumber):
-        super().__init__(Block, location, idnumber)
+        super().__init__(location, idnumber)
 
 
 class Grid(object):
@@ -216,9 +232,9 @@ class Grid(object):
     def __init__(self, xsize, ysize, goalnumbers):
         self.xsize = xsize
         self.ysize = ysize
-        self.goalnumbers=goalnumbers
+        self.goalnumbers = goalnumbers
         print('goalnumbers: ', self.goalnumbers)
-        self.blockcollections={i: BlockCollection(i) for i in goalnumbers}
+        self.blockcollections = {i: BlockCollection(i) for i in goalnumbers}
         self.createEmptyGrid()
 
     def createEmptyGrid(self):
@@ -260,7 +276,7 @@ class Grid(object):
                     done = False
                 elif self.blockcollections[typeid].getCount() < goalnumbers[typeid]:
                     print("oops, too many blocks of type ", typeid, " were added: ",
-                          self.counts[typeid] ,
+                          self.counts[typeid],
                           ' (goal: ', goal, ' )')
                     break
 
@@ -303,20 +319,20 @@ class Grid(object):
         self.occupancies[x][y] = typeid
 
     def setOccupied(self, block):
-        for (x,y) in block.getCoords():
-            self.setOccupancy(x,y,block.getTypeid())
+        for (x, y) in block.getCoords():
+            self.setOccupancy(x, y, block.getTypeid())
 
     def checkFree(self, block):
-        for (x,y) in block.getCoords():
-            if self.getOccupancy(x,y)!=0:
+        for (x, y) in block.getCoords():
+            if self.getOccupancy(x, y) != 0:
                 return False
         return True
 
     def add(self, typeid):
         randx = random.randrange(self.xsize)
         randy = random.randrange(self.ysize)
-        location=(randy, randx)
-        proposedBlock = Block.createBlock(location, typeid, self.blockcollections[typeid].getCount()+1)
+        location = (randy, randx)
+        proposedBlock = Block.createBlock(location, typeid, self.blockcollections[typeid].getCount() + 1)
 
         if self.checkFree(proposedBlock):
             self.blockcollections[typeid].addBlock(proposedBlock)
@@ -332,7 +348,7 @@ class Grid(object):
 if __name__ == "__main__":
     '''tests'''
     print("running")
-    goalnumbers = {1: 5} #specify the simulation should contain 5 squares
+    goalnumbers = {8:2, 9: 2}
     testgrid = Grid(10, 10, goalnumbers)
     print("created testgrid:", testgrid, sep='\n')
     testgrid.populate()
