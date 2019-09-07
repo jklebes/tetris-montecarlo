@@ -150,7 +150,10 @@ class RightLBlock(Block):
 class ZBlocK(Block):
     typeid = 7
     name = 'Z'
-    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    shape = [[(0, 0), (0, 1), (1, 1), (1, 2)],
+             [(0, 1), (1, 1), (1, 0), (2, 0)],
+             [(1, 0), (1, 1), (0, 1), (0, 2)],
+             [(0, 0), (1, 0), (1, 1), (2, 1)]]
 
 
     def __init__(self, location, idnumber):
@@ -180,7 +183,7 @@ class RightZBlock(Block):
         1.& 3. OX  2. & 4.  XXO  
                XX           OXX  
                XO             
-     """
+    """
     shape = [[(1, 0), (1, 1), (0, 1), (0, 2)],
              [(0, 0), (1, 0), (1, 1), (2, 1)]]
 
