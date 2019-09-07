@@ -24,6 +24,10 @@ class BlockCollection(object):
     """holds many blocks of one type"""
     def __init__(self, typeid): #with no further arguments: init empty collection
         self.typeid=typeid
+        self.blocks={}
+
+    def getCount(self):
+        return len(self.blocks)
 
 class Block(object):
     """superclass to 7 specific types of block
@@ -32,9 +36,8 @@ class Block(object):
     #the user should instantiate specific subclass objects, not Block objects
     typeid = NotImplemented
     name = NotImplemented
-    baseShape = NotImplemented #coords, starting from (0,0), defining the shape of the block
-    rotates = NotImplemented
-    flippable = NotImplemented
+    shapes = NotImplemented
+    createMethodsDict={1: (lambda loc, typeid : SquareBlock(loc, typeid)) }
 
     def __init__(self, location, idnumber):
         """
@@ -44,23 +47,25 @@ class Block(object):
         """
         self.location=location
         self.idnumber=idnumber
-        # populate self.variations from base shape, information on symmetries
-        # put this somewhere else to avoid doing it for each new block ?
-        self.shape = self.baseShape
-        # flip or rotate at random, if applicable
-        if self.rotates:
-            self.shape=self.randomRotate(self.shape)
-        if self.flippable:
-            self.shape = self.randomFlip(self.shape)
+        self.shape = random.choice(self.shape)
         self.coords = location + self.shape
         self.idnumber = idnumber
 
+    def createBlock(self, location, typeid):
+        """
+        return a new block object of the desired type
+        by using __init__ method from dict
+        :param typeid:
+        :return:
+        """
+        block = self.createMethodsDict[typeid](location, typeid)
+        return block
 
 
 class SquareBlock(Block):
     typeid=1
     name = 'square'
-    shape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    shapes = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
@@ -68,7 +73,7 @@ class SquareBlock(Block):
 class TBlock(Block):
     typeid = 3
     name = 'T'
-    shape =  [[(0, 0), (1, 0), (2, 0), (1, 1)],
+    shapes =  [[(0, 0), (1, 0), (2, 0), (1, 1)],
               [(0, 0), (0, 1), (0, 2), (1, 1)],
               [(0, 1), (1, 1), (2, 1), (1, 0)],
               [(1, 0), (1, 1), (1, 2), (0, 1)],
@@ -81,7 +86,7 @@ class TBlock(Block):
 class LineBlock(Block):
     typeid = 2
     name = 'line'
-    shape =  [[(0, 0), (0, 1), (0, 2), (0, 3)],
+    shapes =  [[(0, 0), (0, 1), (0, 2), (0, 3)],
               [(0, 0), (1, 0), (2, 0), (3, 0)]]
 
     def __init__(self, location, idnumber):
@@ -91,7 +96,7 @@ class LBlock(Block):
     typeid = 4
     name = 'L'
     """leftL and rightL shapes"""
-    shape = [[(0, 0), (0, 1), (0, 2), (1, 2)],
+    shapes = [[(0, 0), (0, 1), (0, 2), (1, 2)],
              [(0, 1), (1, 1), (2, 1), (2, 0)],
              [(0, 0), (1, 0), (1, 1), (1, 2)],
              [(0, 0), (1, 0), (2, 0), (0, 1)],
@@ -120,7 +125,7 @@ class LeftLBlock(Block):
        XX             OX
     
     """
-    shape = [[(0, 0), (0, 1), (0, 2), (1, 2)],
+    shapes = [[(0, 0), (0, 1), (0, 2), (1, 2)],
              [(0, 1), (1, 1), (2, 1), (2, 0)],
              [(0, 0), (1, 0), (1, 1), (1, 2)],
              [(0, 0), (1, 0), (2, 0), (0, 1)]]
@@ -139,7 +144,7 @@ class RightLBlock(Block):
        XX             XO
 
     """
-    shape = [[(0, 0), (0, 1), (0, 2), (1, 2)],
+    shapes = [[(0, 0), (0, 1), (0, 2), (1, 2)],
              [(0, 1), (1, 1), (2, 1), (2, 0)],
              [(0, 0), (1, 0), (1, 1), (1, 2)],
              [(0, 0), (1, 0), (2, 0), (0, 1)]]
@@ -150,7 +155,7 @@ class RightLBlock(Block):
 class ZBlocK(Block):
     typeid = 7
     name = 'Z'
-    shape = [[(0, 0), (0, 1), (1, 1), (1, 2)],
+    shapes = [[(0, 0), (0, 1), (1, 1), (1, 2)],
              [(0, 1), (1, 1), (1, 0), (2, 0)],
              [(1, 0), (1, 1), (0, 1), (0, 2)],
              [(0, 0), (1, 0), (1, 1), (2, 1)]]
@@ -168,7 +173,7 @@ class LeftZBlock(Block):
            XX           XXO  
            OX             
     """
-    shape = [[(0, 0), (0, 1), (1, 1), (1, 2)],
+    shapes = [[(0, 0), (0, 1), (1, 1), (1, 2)],
              [(0, 1), (1, 1), (1, 0), (2, 0)]]
 
 
@@ -184,7 +189,7 @@ class RightZBlock(Block):
                XX           OXX  
                XO             
     """
-    shape = [[(1, 0), (1, 1), (0, 1), (0, 2)],
+    shapes = [[(1, 0), (1, 1), (0, 1), (0, 2)],
              [(0, 0), (1, 0), (1, 1), (2, 1)]]
 
     def __init__(self, location, idnumber):
@@ -192,7 +197,7 @@ class RightZBlock(Block):
 
 
 class Grid(object):
-"""
+    """
     main object
     """
 
@@ -200,7 +205,8 @@ class Grid(object):
         self.xsize = xsize
         self.ysize = ysize
         self.goalnumbers=goalnumbers
-        self.blockcollection={i, BlockCollection() for i in goalnumbers}
+        print('goalnumbers: ', self.goalnumbers)
+        self.blockcollections={i: BlockCollection(i) for i in goalnumbers}
         self.createEmptyGrid()
 
     def createEmptyGrid(self):
@@ -228,15 +234,16 @@ class Grid(object):
             # print('initiating loop', counter)
             # print(self)
             counter += 1
-            for (typeid, goal) in self.goalnumbers:
+            for typeid in self.goalnumbers:
                 done = True
-                if self.counts[typeid] < goal:
+                if self.blockcollections[typeid].getCount() < goalnumbers[typeid]:
                     self.add(typeid)
                     done = False
-                elif self.counts[typeid] < goal
+                elif self.blockcollections[typeid].getCount() < goalnumbers[typeid]:
                     print("oops, too many blocks of type ", typeid, " were added: ",
                           self.counts[typeid] ,
                           ' (goal: ', goal, ' )')
+                    break
 
     def step(self, temperature=0):
         """
@@ -265,7 +272,7 @@ class Grid(object):
             y -= self.ysize
         return self.occupancies[x][y]
 
-    def setOccupancy(self, x, y, blocknumber):
+    def setOccupancy(self, x, y, typeid):
         if x < 0:
             x += self.xsize
         elif x >= self.xsize:
@@ -274,31 +281,24 @@ class Grid(object):
             y += self.ysize
         elif y >= self.ysize:
             y -= self.ysize
-        self.occupancies[x][y] = blocknumber
+        self.occupancies[x][y] = typeid
 
-    def add(self, blocknumber):
+    def setOccupied(self, block):
+        for (x,y) in block.getCoords():
+            self.setOccupancy(block.getTypeid())
+
+    def checkFree(self, block):
+        return True
+
+    def add(self, typeid):
         randx = random.randrange(self.xsize)
         randy = random.randrange(self.ysize)
-        free = True
-        for field in Blocks.coords[blocknumber]:
-            locationx = randx + field[0]
-            locationy = randy + field[1]
-            # print('checking ', locationx, locationy, ': ')
-            if self.getOccupancy(locationx, locationy):
-                # print('not free')
-                free = False
-            else:
-                # print('free')
-                pass
-        if free:
-            # print('adding at: ')
-            for field in Blocks.coords[blocknumber]:
-                locationx = randx + field[0]
-                locationy = randy + field[1]
-                # print(locationx, locationy)
-                self.setOccupancy(locationx, locationy, blocknumber)
-                self.blocks.blockcounts[blocknumber] += 1
-                self.blocklist.append(Block(id_, typenumber, location))
+        location=(randy, randx)
+        proposedBlock = Block.createBlock(typeid)
+
+        if self.checkFree(proposedBlock):
+            self.blockcollections[typeid].addBlock(proposedBlock)
+            self.setOccupied(proposedBlock)
 
     def run(self, nsteps):
         pass
