@@ -60,9 +60,7 @@ class Block(object):
 class SquareBlock(Block):
     typeid=1
     name = 'square'
-    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
-    flippable=False
-    rotates = False
+    shape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
@@ -70,9 +68,12 @@ class SquareBlock(Block):
 class TBlock(Block):
     typeid = 3
     name = 'T'
-    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
-    flippable = False
-    rotates = True
+    shape =  [[(0, 0), (1, 0), (2, 0), (1, 1)],
+              [(0, 0), (0, 1), (0, 2), (1, 1)],
+              [(0, 1), (1, 1), (2, 1), (1, 0)],
+              [(1, 0), (1, 1), (1, 2), (0, 1)],
+              ]
+
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
@@ -80,9 +81,8 @@ class TBlock(Block):
 class LineBlock(Block):
     typeid = 2
     name = 'line'
-    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
-    flippable = False
-    rotates = True
+    shape =  [[(0, 0), (0, 1), (0, 2), (0, 3)],
+              [(0, 0), (1, 0), (2, 0), (3, 0)]]
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
@@ -90,9 +90,15 @@ class LineBlock(Block):
 class LBlock(Block):
     typeid = 4
     name = 'L'
-    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
-    flippable = True
-    rotates = True
+    """leftL and rightL shapes"""
+    shape = [[(0, 0), (0, 1), (0, 2), (1, 2)],
+             [(0, 1), (1, 1), (2, 1), (2, 0)],
+             [(0, 0), (1, 0), (1, 1), (1, 2)],
+             [(0, 0), (1, 0), (2, 0), (0, 1)],
+             [(0, 0), (0, 1), (0, 2), (1, 2)],
+             [(0, 1), (1, 1), (2, 1), (2, 0)],
+             [(0, 0), (1, 0), (1, 1), (1, 2)],
+             [(0, 0), (1, 0), (2, 0), (0, 1)]]
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
@@ -100,9 +106,25 @@ class LBlock(Block):
 class LeftLBlock(Block):
     typeid = 5
     name = 'leftL'
-    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
-    flippable = False
-    rotates = True
+    """
+    
+    (0,0)  (1,0)  (2,0)
+     
+    (0,1)  (1,1)  (2,1)
+    
+    (0,2)  (1,2)
+    
+    shape:
+    1. XO  2. 00X  3. XX  4. XXX
+       XO     XXX     OX     XOO
+       XX             OX
+    
+    """
+    shape = [[(0, 0), (0, 1), (0, 2), (1, 2)],
+             [(0, 1), (1, 1), (2, 1), (2, 0)],
+             [(0, 0), (1, 0), (1, 1), (1, 2)],
+             [(0, 0), (1, 0), (2, 0), (0, 1)]]
+
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
@@ -110,9 +132,17 @@ class LeftLBlock(Block):
 class RightLBlock(Block):
     typeid = 6
     name = 'rightL'
-    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
-    flippable = False
-    rotates = True
+    """
+    shape:
+    1. OX  2. XOO  3. XX  4. XXX
+       OX     XXX     XO     OOX
+       XX             XO
+
+    """
+    shape = [[(0, 0), (0, 1), (0, 2), (1, 2)],
+             [(0, 1), (1, 1), (2, 1), (2, 0)],
+             [(0, 0), (1, 0), (1, 1), (1, 2)],
+             [(0, 0), (1, 0), (2, 0), (0, 1)]]
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
@@ -121,8 +151,7 @@ class ZBlocK(Block):
     typeid = 7
     name = 'Z'
     baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
-    flippable = True
-    rotates = True
+
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
@@ -130,9 +159,15 @@ class ZBlocK(Block):
 class LeftZBlock(Block):
     typeid = 8
     name = 'leftZ'
-    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
-    flippable = False
-    rotates = True
+    """
+    shape:
+    1.& 3. XO  2. & 4.  OXX  
+           XX           XXO  
+           OX             
+    """
+    shape = [[(0, 0), (0, 1), (1, 1), (1, 2)],
+             [(0, 1), (1, 1), (1, 0), (2, 0)]]
+
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
@@ -140,16 +175,21 @@ class LeftZBlock(Block):
 class RightZBlock(Block):
     typeid = 1
     name = 'rightZ'
-    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
-    flippable = False
-    rotates = True
+    """
+        shape:
+        1.& 3. OX  2. & 4.  XXO  
+               XX           OXX  
+               XO             
+     """
+    shape = [[(1, 0), (1, 1), (0, 1), (0, 2)],
+             [(0, 0), (1, 0), (1, 1), (2, 1)]]
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
 
 
 class Grid(object):
-    """
+"""
     main object
     """
 
