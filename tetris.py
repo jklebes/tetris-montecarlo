@@ -34,7 +34,7 @@ class Block(object):
     name = NotImplemented
     baseShape = NotImplemented #coords, starting from (0,0), defining the shape of the block
     rotates = NotImplemented
-    chiral = NotImplemented
+    flippable = NotImplemented
 
     def __init__(self, location, idnumber):
         """
@@ -50,7 +50,7 @@ class Block(object):
         # flip or rotate at random, if applicable
         if self.rotates:
             self.shape=self.randomRotate(self.shape)
-        if self.chiral:
+        if self.flippable:
             self.shape = self.randomFlip(self.shape)
         self.coords = location + self.shape
         self.idnumber = idnumber
@@ -61,35 +61,91 @@ class SquareBlock(Block):
     typeid=1
     name = 'square'
     baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
-    chiral=False
+    flippable=False
     rotates = False
 
     def __init__(self, location, idnumber):
         super().__init__(Block, location, idnumber)
 
 class TBlock(Block):
-    pass
+    typeid = 3
+    name = 'T'
+    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    flippable = False
+    rotates = True
+
+    def __init__(self, location, idnumber):
+        super().__init__(Block, location, idnumber)
 
 class LineBlock(Block):
-    pass
+    typeid = 2
+    name = 'line'
+    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    flippable = False
+    rotates = True
+
+    def __init__(self, location, idnumber):
+        super().__init__(Block, location, idnumber)
 
 class LBlock(Block):
-    pass
+    typeid = 4
+    name = 'L'
+    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    flippable = True
+    rotates = True
+
+    def __init__(self, location, idnumber):
+        super().__init__(Block, location, idnumber)
 
 class LeftLBlock(Block):
-    pass
+    typeid = 5
+    name = 'leftL'
+    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    flippable = False
+    rotates = True
+
+    def __init__(self, location, idnumber):
+        super().__init__(Block, location, idnumber)
 
 class RightLBlock(Block):
-    pass
+    typeid = 6
+    name = 'rightL'
+    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    flippable = False
+    rotates = True
+
+    def __init__(self, location, idnumber):
+        super().__init__(Block, location, idnumber)
 
 class ZBlocK(Block):
-    pass
+    typeid = 7
+    name = 'Z'
+    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    flippable = True
+    rotates = True
+
+    def __init__(self, location, idnumber):
+        super().__init__(Block, location, idnumber)
 
 class LeftZBlock(Block):
-    pass
+    typeid = 8
+    name = 'leftZ'
+    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    flippable = False
+    rotates = True
+
+    def __init__(self, location, idnumber):
+        super().__init__(Block, location, idnumber)
 
 class RightZBlock(Block):
-    pass
+    typeid = 1
+    name = 'rightZ'
+    baseshape = [[(0, 0), (0, 1), (1, 0), (1, 1)]]
+    flippable = False
+    rotates = True
+
+    def __init__(self, location, idnumber):
+        super().__init__(Block, location, idnumber)
 
 
 class Grid(object):
