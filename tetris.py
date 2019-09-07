@@ -42,9 +42,10 @@ class Block(object):
         :param location: (x,y) location of upper left part of block on grid
         :param idnumber: number of this block object in the list of blocks of one type
         """
+        self.location=location
+        self.idnumber=idnumber
         # populate self.variations from base shape, information on symmetries
         # put this somewhere else to avoid doing it for each new block ?
-        self.variations = self.generateVariations()
         self.shape = self.baseShape
         # flip or rotate at random, if applicable
         if self.rotates:
