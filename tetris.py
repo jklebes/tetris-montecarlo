@@ -22,7 +22,7 @@ coords = {1: [(0, 0), (0, 1), (1, 0), (1, 1)],
 
 
 class Block(object):
-    """superclass to 9 types of block
+    """superclass to 9 specific types of block
     lists attributes and methods needed in each block type"""
     typeid = NotImplemented
     name = NotImplemented
