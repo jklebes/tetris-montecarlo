@@ -28,16 +28,29 @@ class BlockCollection(object):
 class Block(object):
     """superclass to 9 specific types of block
     lists attributes and methods needed in each block type"""
+
+    #the user should instantiate specific subclass objects, not Block objects
     typeid = NotImplemented
     name = NotImplemented
-    variations = NotImplemented
-    numvariations: int = NotImplemented
+    baseShape = NotImplemented #coords, starting from (0,0), defining the shape of the block
+    flips = NotImplemented
+    rotates = NotImplemented
 
     def __init__(self, location, idnumber):
+        """
+        create a block object
+        :param location: (x,y) location of upper left part of block on grid
+        :param idnumber: number of this block object in the list of blocks of one type
+        """
+        # populate self.variations from base shape, information on symmetries
+        # put this somewhere else to avoid doing it for each new block ?
+        self.variations = self.generateVariations()
+        self.numvariations = len(self.variations)
         # choose one of the variations at random
         self.shape = self.variations[random.randint(self.numvariations)]
-        self.coords = location + shape
+        self.coords = location + self.shape
         self.idnumber = idnumber
+
 
 
 class Square(Block):
