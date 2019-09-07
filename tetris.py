@@ -45,9 +45,12 @@ class Block(object):
         # populate self.variations from base shape, information on symmetries
         # put this somewhere else to avoid doing it for each new block ?
         self.variations = self.generateVariations()
-        self.numvariations = len(self.variations)
-        # choose one of the variations at random
-        self.shape = self.variations[random.randint(self.numvariations)]
+        self.shape = self.baseShape
+        # flip or rotate at random, if applicable
+        if self.rotates:
+            self.shape=self.randomRotate(self.shape)
+        if self.flips:
+            self.shape = self.randomFlip(self.shape)
         self.coords = location + self.shape
         self.idnumber = idnumber
 
