@@ -21,7 +21,8 @@ coords = {1: [(0, 0), (0, 1), (1, 0), (1, 1)],
 
 
 class BlockCollection(object):
-    """holds many blocks of one type"""
+    """holds many blocks of one type
+    just a set wrapper - class not necessary? """
 
     def __init__(self, typeid):  # with no further arguments: init empty collection
         self.typeid = typeid
@@ -35,8 +36,11 @@ class BlockCollection(object):
         self.blocks.add(block)
 
     def popRandom(self):
-        block = self.blocks.pop()
-        return block
+        if self.blocks:
+            block = self.blocks.pop()
+            return block
+        else: #if set is empty
+            return None
 
 
 class Block(object):
@@ -268,23 +272,22 @@ class Grid(object):
         outstr_list.append('.\n')
         return ' '.join(outstr_list)
 
-    def populate(self):
+    def populate(self, tries):
         done = False
         counter = 0
-        limit = 10000
-        while not done and counter < limit:
+        while not done and counter < tries:
             # print('initiating loop', counter)
             # print(self)
             counter += 1
             for typeid in self.goalnumbers:
-                done = True
                 if self.blockcollections[typeid].getCount() < goalnumbers[typeid]:
                     self.add(typeid)
-                    done = False
-                elif self.blockcollections[typeid].getCount() < goalnumbers[typeid]:
+                elif self.blockcollections[typeid].getCount() == goalnumbers[typeid]:
+                    done = True
+                else:
                     print("oops, too many blocks of type ", typeid, " were added: ",
-                          self.counts[typeid],
-                          ' (goal: ', goal, ' )')
+                          self.blockcollections[typeid].getCount(),
+                          ' (goal: ',  goalnumbers[typeid], ' )')
                     break
 
     def step(self, temperature=0):
@@ -295,7 +298,7 @@ class Grid(object):
         """
         for i in self.blockcollections:
             self.remove(i)
-            self.add(i)
+        self.populate(tries = 100)
 
     def getOccupancy(self, x, y):
         """
@@ -353,11 +356,13 @@ class Grid(object):
 
     def remove(self, typeid):
         block = self.blockcollections[typeid].popRandom()
-        self.unsetOccupied(block)
+        if block: #block could be None if collection is empty
+            self.unsetOccupied(block)
 
 
     def run(self, nsteps):
-        pass
+        for i in range(nsteps):
+            self.step()
 
     def equilibrate(self):
         pass
@@ -366,14 +371,13 @@ class Grid(object):
 if __name__ == "__main__":
     '''tests'''
     print("running")
-    goalnumbers = {8:2, 9: 2}
+    goalnumbers = {8:100, 9: 100}
     testgrid = Grid(10, 10, goalnumbers)
     print("created testgrid:", testgrid, sep='\n')
-    testgrid.populate()
+    testgrid.populate(tries=10000)
     print("populated testgrid")
+    print("counts: ", [(i, testgrid.blockcollections[i].getCount()) for i in goalnumbers])
     print(testgrid)
     print('blocks:', testgrid.blockcollections)
-    testgrid.step()
-    print(testgrid)
-    testgrid.step()
+    testgrid.run(1000)
     print(testgrid)
