@@ -27,12 +27,14 @@ class BlockCollection(object):
     def __init__(self, typeid):  # with no further arguments: init empty collection
         self.typeid = typeid
         self.blocks = set([])
+        self.nextid = 0
 
     def getCount(self):
         return len(self.blocks)
 
     def addBlock(self, block):
         # do checks
+        self.nextid+=1
         self.blocks.add(block)
 
     def popRandom(self):
@@ -41,6 +43,11 @@ class BlockCollection(object):
             return block
         else: #if set is empty
             return None
+
+    def getNextid(self):
+        id=self.nextid
+        return id
+
 
 
 class Block(object):
@@ -92,6 +99,9 @@ class Block(object):
 
     def getTypeid(self):
         return self.typeid
+
+    def getNumber(self):
+        return self.idnumber
 
 
 class SquareBlock(Block):
@@ -264,7 +274,7 @@ class Grid(object):
                 if i == 0:
                     outstr_list.append(' ')
                 else:
-                    outstr_list.append(str(i))
+                    outstr_list.append(str(i[0]))
             outstr_list.append('|\n')
         outstr_list.append('.')
         for i in range(self.xsize):
@@ -330,7 +340,7 @@ class Grid(object):
 
     def setOccupied(self, block):
         for (x, y) in block.getCoords():
-            self.setOccupancy(x, y, block.getTypeid())
+            self.setOccupancy(x, y, (block.getTypeid(),block.getNumber()))
 
     def unsetOccupied(self, block):
         for (x, y) in block.getCoords():
@@ -346,7 +356,7 @@ class Grid(object):
         randx = random.randrange(self.xsize)
         randy = random.randrange(self.ysize)
         location = (randy, randx)
-        proposedBlock = Block.createBlock(location, typeid, self.blockcollections[typeid].getCount() + 1)
+        proposedBlock = Block.createBlock(location, typeid, self.blockcollections[typeid].getNextid())
 
         if self.checkFree(proposedBlock):
             self.blockcollections[typeid].addBlock(proposedBlock)
