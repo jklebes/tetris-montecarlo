@@ -34,20 +34,19 @@ class BlockCollection(object):
 
     def addBlock(self, block):
         # do checks
-        self.nextid+=1
+        self.nextid += 1
         self.blocks.add(block)
 
     def popRandom(self):
         if self.blocks:
             block = self.blocks.pop()
             return block
-        else: #if set is empty
+        else:  # if set is empty
             return None
 
     def getNextid(self):
-        id=self.nextid
+        id = self.nextid
         return id
-
 
 
 class Block(object):
@@ -297,7 +296,7 @@ class Grid(object):
                 else:
                     print("oops, too many blocks of type ", typeid, " were added: ",
                           self.blockcollections[typeid].getCount(),
-                          ' (goal: ',  goalnumbers[typeid], ' )')
+                          ' (goal: ', goalnumbers[typeid], ' )')
                     break
 
     def step(self, temperature=0):
@@ -308,7 +307,7 @@ class Grid(object):
         """
         for i in self.blockcollections:
             self.remove(i)
-        self.populate(tries = 100)
+        self.populate(tries=100)
 
     def getOccupancy(self, x, y):
         """
@@ -340,7 +339,7 @@ class Grid(object):
 
     def setOccupied(self, block):
         for (x, y) in block.getCoords():
-            self.setOccupancy(x, y, (block.getTypeid(),block.getNumber()))
+            self.setOccupancy(x, y, (block.getTypeid(), block.getNumber()))
 
     def unsetOccupied(self, block):
         for (x, y) in block.getCoords():
@@ -366,9 +365,8 @@ class Grid(object):
 
     def remove(self, typeid):
         block = self.blockcollections[typeid].popRandom()
-        if block: #block could be None if collection is empty
+        if block:  # block could be None if collection is empty
             self.unsetOccupied(block)
-
 
     def run(self, nsteps):
         for i in range(nsteps):
@@ -381,13 +379,13 @@ class Grid(object):
 if __name__ == "__main__":
     '''tests'''
     print("running")
-    goalnumbers = {8:100, 9: 100}
+    goalnumbers = {1: 10, 2: 10, 3: 10, 5: 10, 6: 10, 8: 10, 9: 10}
     testgrid = Grid(10, 10, goalnumbers)
     print("created testgrid:", testgrid, sep='\n')
     testgrid.populate(tries=10000)
     print("populated testgrid")
     print("counts: ", [(i, testgrid.blockcollections[i].getCount()) for i in goalnumbers])
     print(testgrid)
-    print('blocks:', testgrid.blockcollections)
     testgrid.run(1000)
     print(testgrid)
+    print("final counts: ", [(i, testgrid.blockcollections[i].getCount()) for i in goalnumbers])
