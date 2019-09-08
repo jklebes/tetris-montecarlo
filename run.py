@@ -1,6 +1,6 @@
 from tetris import *
 
-def maxAllTypes(timestep, nsteps):
+def alltypesovertime(timestep, nsteps):
     print("running")
     goalnumbers = {1: 5000, 2: 5000, 3: 5000, 5: 5000, 6: 5000, 8: 5000, 9: 5000}
     testgrid = Grid(100, 100, goalnumbers)
@@ -17,5 +17,5 @@ def maxAllTypes(timestep, nsteps):
     print("final counts: ", [(i, testgrid.blockcollections[i].getCount()) for i in goalnumbers])
     return countsvstime
 
-countsvstime = maxAllTypes(100, 100)
+countsvstime = alltypesovertime(100, 100)
 print(countsvstime)
