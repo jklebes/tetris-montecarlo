@@ -34,6 +34,10 @@ class BlockCollection(object):
         # do checks
         self.blocks.add(block)
 
+    def popRandom(self):
+        block = self.blocks.pop()
+        return block
+
 
 class Block(object):
     """superclass to 7 specific types of block
@@ -253,7 +257,10 @@ class Grid(object):
         for row in self.occupancies:
             outstr_list.append('|')
             for i in row:
-                outstr_list.append(str(i))
+                if i == 0:
+                    outstr_list.append(' ')
+                else:
+                    outstr_list.append(str(i))
             outstr_list.append('|\n')
         outstr_list.append('.')
         for i in range(self.xsize):
@@ -286,7 +293,7 @@ class Grid(object):
         :param temperature:
         :return:
         """
-        for i in blocks:
+        for i in self.blockcollections:
             self.remove(i)
             self.add(i)
 
@@ -322,6 +329,10 @@ class Grid(object):
         for (x, y) in block.getCoords():
             self.setOccupancy(x, y, block.getTypeid())
 
+    def unsetOccupied(self, block):
+        for (x, y) in block.getCoords():
+            self.setOccupancy(x, y, 0)
+
     def checkFree(self, block):
         for (x, y) in block.getCoords():
             if self.getOccupancy(x, y) != 0:
@@ -337,6 +348,13 @@ class Grid(object):
         if self.checkFree(proposedBlock):
             self.blockcollections[typeid].addBlock(proposedBlock)
             self.setOccupied(proposedBlock)
+            return True
+        return False
+
+    def remove(self, typeid):
+        block = self.blockcollections[typeid].popRandom()
+        self.unsetOccupied(block)
+
 
     def run(self, nsteps):
         pass
@@ -355,3 +373,7 @@ if __name__ == "__main__":
     print("populated testgrid")
     print(testgrid)
     print('blocks:', testgrid.blockcollections)
+    testgrid.step()
+    print(testgrid)
+    testgrid.step()
+    print(testgrid)
