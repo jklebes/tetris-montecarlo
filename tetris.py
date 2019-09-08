@@ -289,9 +289,9 @@ class Grid(object):
             # print(self)
             counter += 1
             for typeid in self.goalnumbers:
-                if self.blockcollections[typeid].getCount() < goalnumbers[typeid]:
+                if self.blockcollections[typeid].getCount() < self.goalnumbers[typeid]:
                     self.add(typeid)
-                elif self.blockcollections[typeid].getCount() == goalnumbers[typeid]:
+                elif self.blockcollections[typeid].getCount() == self.goalnumbers[typeid]:
                     done = True
                 else:
                     print("oops, too many blocks of type ", typeid, " were added: ",
